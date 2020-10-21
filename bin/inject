@@ -1,0 +1,37 @@
+#!/bin/bash
+
+function usage {
+  echo
+  echo "### USAGE #########################################"
+  echo
+  echo " ./bin/inject <CSV> <ENV>"
+  echo
+  echo "CSV: path to csv file"
+  echo "ENV: {production|development|test}"
+  echo
+  echo "###################################################"
+  echo
+}
+
+csv="${1}"
+env="${2}"
+
+if [[ ! -f "$csv" ]];then
+  usage
+  echo "File Not Found: ${csv}"
+  exit 0
+fi
+
+if [[ ! "$env" =~ ^production|development|test$ ]];then
+  usage
+  echo "ENV must be {production|development|test}: ${env}"
+  exit 0
+fi
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+export NODE_ENV="$env"
+
+node ./dist/inject.js $file $env
+

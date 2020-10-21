@@ -1,0 +1,26 @@
+#!/bin/bash
+
+function usage {
+  echo
+  echo "### USAGE #########################################"
+  echo
+  echo " ./bin/connect <ENV>"
+  echo
+  echo "ENV: {production|development|test}"
+  echo
+  echo "###################################################"
+  echo
+}
+
+env="${1}"
+
+if [[ ! "$env" =~ ^production|development|test$ ]];then
+  usage
+  echo "ENV must be {production|development|test}: ${env}"
+  exit 0
+fi
+
+echo "ENV: ${env}"
+
+node ./dist/connect.js $env
+

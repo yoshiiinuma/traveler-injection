@@ -1,0 +1,9 @@
+"RequestorEmail","RequestorFirstName","RequestorLastName","RequestorCompany","ApplicationDate","CloseDate","Status","TravelType","ExemptionCategory","Purpose","CISASubCategory","Details","TravelerFirstName","TravelerMiddleName","TravelerLastName","OriginCountry","OriginState","DestinationIsland","ArrivalDate","ArrivalFlightNumber","DepartureDate","DepartureFlightNumber","Phone","QuarantineLocationType","QuarantineLocationAddress","Travel14DaysBeforeArrival","RecentTravels"
+"aaaa@gmail.com","AAAA1","BBBB1","CCCC1",2020-09-01,2020-09-02,"Approved","Mainland","CISA Federal Critical Infrastructure Sector",,,"XXXXXXXXX","PPPP1",,"QQQQ1","United States","Arizona","Oʻahu",2020-10-01,,,,8089991111,"Hotel / Motel","1111 Aaaa St, Honolulu, HI",TRUE,"China"
+,,,,,,,,,,,,"PPPP2",,"QQQQ2","United States","Arizona","Oʻahu",2020-10-02,,,,8089992222,"Hotel / Motel","2222 Aaaa St, Honolulu, HI",,
+,,,,,,,,,,,,"PPPP3",,"QQQQ3","United States","Arizona","Oʻahu",2020-10-03,,,,8089993333,"Hotel / Motel","3333 Aaaa St, Honolulu, HI",,
+"aaaa@gmail.com","AAAA2","BBBB2","CCCC2",2020-09-02,2020-09-02,"XXXX","Interisland","Recreational Boat Arrival",,,"XXXXXXXXX","PPPP1",,"QQQQ1","United States","Arizona","Oʻahu",2020-10-01,,,,8089991111,"Hotel / Motel","1111 Aaaa St, Honolulu, HI",TRUE,"China"
+,,,,,,,,,,,,"PPPP2",,"QQQQ2","United States","Arizona","Oʻahu",2020-10-02,,,,8089992222,"Hotel / Motel","2222 Aaaa St, Honolulu, HI",,
+,,,,,,,,,,,,"PPPP3",,"QQQQ3","United States","Arizona","Oʻahu",2020-10-03,,,,8089993333,"Hotel / Motel","3333 Aaaa St, Honolulu, HI",,
+"aaaa@gmail.com","AAAA3","BBBB3","CCCC3",2020-09-03,2020-09-03,"Approved","Mainland","Other",,,"XXXXXXXXX","PPPP1",,"QQQQ1","United States","Arizona","Oʻahu",2020-10-01,,,,8089991111,"Hotel / Motel","1111 Aaaa St, Honolulu, HI",TRUE,"China"
+,,,,,,,,,,,,"PPPP2",,"QQQQ2","United States","Arizona","Oʻahu",2020-10-02,,,,8089992222,"XXXX","2222 Aaaa St, Honolulu, HI",,

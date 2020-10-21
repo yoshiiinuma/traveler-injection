@@ -1,0 +1,4 @@
+"RequestorEmail","RequestorFirstName","RequestorLastName","RequestorCompany","ApplicationDate","CloseDate","Status","TravelType","ExemptionCategory","Purpose","CISASubCategory","Details","TravelerFirstName","TravelerMiddleName","TravelerLastName","OriginCountry","OriginState","DestinationIsland","ArrivalDate","ArrivalFlightNumber","DepartureDate","DepartureFlightNumber","Phone","QuarantineLocationType","QuarantineLocationAddress","Travel14DaysBeforeArrival","RecentTravels"
+,,,,,,,,,,,,"PPPP1",,"QQQQ1","United States","Arizona","Oʻahu",2020-10-01,,,,8089991111,"Hotel / Motel","1111 Aaaa St, Honolulu, HI",,
+,,,,,,,,,,,,"PPPP2",,"QQQQ2","United States","Arizona","Oʻahu",2020-10-02,,,,8089992222,"Hotel / Motel","2222 Aaaa St, Honolulu, HI",,
+,,,,,,,,,,,,"PPPP3",,"QQQQ3","United States","Arizona","Oʻahu",2020-10-03,,,,8089993333,"Hotel / Motel","3333 Aaaa St, Honolulu, HI",,

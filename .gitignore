@@ -1,0 +1,7 @@
+/dist/
+/node_modules/
+*.swp
+/logs/*
+/certs/*.pem
+/config/*.json
+!/config/sample.json

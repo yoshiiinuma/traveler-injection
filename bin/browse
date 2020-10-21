@@ -1,0 +1,24 @@
+#!/bin/bash
+
+function usage {
+  echo
+  echo "### USAGE #########################################"
+  echo
+  echo " ./bin/browse <CSV>"
+  echo
+  echo "CSV: path to csv file"
+  echo
+  echo "###################################################"
+  echo
+}
+
+csv="${1}"
+
+if [[ ! -f "$csv" ]];then
+  usage
+  echo "File Not Found: ${csv}"
+  exit 0
+fi
+
+node ./dist/browse.js $csv
+

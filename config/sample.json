@@ -1,0 +1,12 @@
+{
+  "host": "localhost",
+  "port": "3306",
+  "user": "user",
+  "password": "password",
+  "database": "database",
+  "ssl": {
+    "ca": "./path/to/ca.pem",
+    "key": "./path/to/client-key.pem",
+    "cert": "./path/to/client-cert.pem"
+  }
+}
