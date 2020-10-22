@@ -19,6 +19,14 @@ const usage = () => {
   console.log();
 };
 
+const args = process.argv.slice(2);
+
+if (args.length != 1) {
+  usage();
+  process.exit();
+}
+
+const csv = args[0];
 const env = process.env.NODE_ENV;
 
 if (!env) {
@@ -34,15 +42,6 @@ if (!SUPPORTED_ENV.includes(env)) {
   usage();
   process.exit();
 }
-
-const args = process.argv.slice(2);
-
-if (args.length != 1) {
-  usage();
-  process.exit();
-}
-
-const csv = args[0];
 
 console.log('ENV: ' + env + ', CSV: ' + csv);
 

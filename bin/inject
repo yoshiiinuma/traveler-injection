@@ -33,5 +33,5 @@ export NVM_DIR="$HOME/.nvm"
 
 export NODE_ENV="$env"
 
-node ./dist/inject.js $file $env
+NODE_ENV=$env node ./dist/inject.js $csv
 
