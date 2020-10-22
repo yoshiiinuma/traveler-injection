@@ -6,8 +6,7 @@
   "scripts": {
     "connect": "babel-node src/connect.js",
     "build": "babel src --out-dir dist",
-    "inject1": "NODE_ENV=test babel-node src/inject.js ./test/test.csv",
-    "inject2": "NODE_ENV=test babel-node src/inject.js ./data2.csv",
+    "inject": "NODE_ENV=test babel-node src/inject.js ./test/test.csv",
     "unit1": "NODE_ENV=test mocha --require @babel/register './test/validate-test.js' --exit || true",
     "unit2": "NODE_ENV=test mocha --require @babel/register './test/convert-test.js' --exit || true",
     "unit3": "NODE_ENV=test mocha --require @babel/register './test/parse-test.js' --exit || true",
