@@ -26,6 +26,36 @@ describe('Parser.parse', () => {
    })
  })
 
+ context('with a valid CSV file', () => {
+   it('insert RequestId and TravelerId to each record', async () => {
+     const { error, data } = await Parser.parse('./test/test.csv')
+     const rids = {};
+     const tids = {};
+
+     for (let r of data) {
+       let rid = r.RequestId;
+       expect(rid).to.not.be.null;
+       expect(r.Owner).to.be.equal('INJECTED@' + rid);
+       if (!rids[rid]) rids[rid] = 0;
+       rids[rid]++;
+       for (let t of r.travelers) {
+         let tid = t.TravelerId;
+         expect(t.RequestId).to.be.equal(rid);
+         expect(tid).to.not.be.null;
+         expect(t.Owner).to.be.equal('INJECTED@' + rid);
+         if (!tids[tid]) tids[tid] = 0;
+         tids[tid]++;
+       } 
+     }
+     for (let id of Object.keys(rids)) {
+       expect(rids[id]).to.be.equal(1);
+     }
+     for (let id of Object.keys(tids)) {
+       expect(tids[id]).to.be.equal(1);
+     }
+   })
+ })
+
  context('with an invalid CSV file with some invalid data', () => {
    it('returns error', async () => {
      const r = await Parser.parse('./test/error1.csv')
