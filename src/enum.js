@@ -48,7 +48,7 @@ const Purpose = [
 
 const CISASubCategory = [
   "Healthcare / Public Health",
-  "Law Enforcement / Public  Safety / First Responder",
+  "Law Enforcement / Public Safety / First Responder",
   "Food and Agriculture",
   "Energy",
   "Water and Wastewater",
