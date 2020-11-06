@@ -123,7 +123,6 @@ describe('Validator.validateRequest', () => {
       'CloseDate must not be blank',
       'Status must not be blank',
       'ExemptionCategory must not be blank',
-      'Details must not be blank'
     ]
     const exp2 = [
       'ApplicationDate must be valid date (YYYY-MM-DD): 9999-99-99',

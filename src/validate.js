@@ -26,7 +26,7 @@ const RequestValidationRule = {
   ExemptionCategory: { required: true, type: 'enum', options: ENUM.ExemptionCategory },
   Purpose: { required: false, type: 'enum', options: ENUM.Purpose },
   CISASubCategory: { required: false, type: 'enum', options: ENUM.CISASubCategory },
-  Details: { required: true, type: 'string'},
+  Details: { required: false, type: 'string'},
 };
 
 const TravelerValidationRule = {
