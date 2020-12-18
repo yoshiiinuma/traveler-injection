@@ -146,6 +146,12 @@ const OriginState = [
   "West Virginia",
   "Wisconsin",
   "Wyoming",
+  "American Samoa",
+  "Guam",
+  "Puerto Rico",
+  "US Virgin Islands",
+  "Northern Mariana Islands",
+  "Washington D.C.",
 ];
 
 const ENUM = {
