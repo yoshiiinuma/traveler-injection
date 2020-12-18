@@ -4,19 +4,19 @@
  *
  * USAGE: node dist/connect.js <ENV>
  *
- *   ENV:   {production|development|test}
+ *   ENV:   {production|development|test|staging}
  *
  */
 
-import createMySqlClient from './mysql-client.js';
+import MYSQL from './mysql-client.js';
 
-const SUPPORTED_ENV = ['production', 'development', 'test'];
+const SUPPORTED_ENV = ['production', 'development', 'test', 'staging'];
 
 const usage = () => {
   console.log();
   console.log('USAGE: node dist/connect.js <ENV>');
   console.log();
-  console.log('  ENV:  {production|development|test}');
+  console.log('  ENV:  {production|development|test|staging}');
   console.log();
 };
 
@@ -38,13 +38,13 @@ if (!env) {
 
 if (!SUPPORTED_ENV.includes(env)) {
   console.log();
-  console.log('ENV must be {production|development|test} but ' + env);
+  console.log('ENV must be {production|development|test|staging} but ' + env);
   usage();
   process.exit();
 }
 
 const testConnection = async (env) => {
-  const client = createMySqlClient(env);
+  const client = MYSQL.createMySqlClient(env);
   let r;
 
   try {

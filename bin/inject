@@ -7,7 +7,7 @@ function usage {
   echo " ./bin/inject <CSV> <ENV>"
   echo
   echo "CSV: path to csv file"
-  echo "ENV: {production|development|test}"
+  echo "ENV: {production|development|test|staging}"
   echo
   echo "###################################################"
   echo
@@ -22,9 +22,9 @@ if [[ ! -f "$csv" ]];then
   exit 0
 fi
 
-if [[ ! "$env" =~ ^production|development|test$ ]];then
+if [[ ! "$env" =~ ^production|development|test|staging$ ]];then
   usage
-  echo "ENV must be {production|development|test}: ${env}"
+  echo "ENV must be {production|development|test|staging}: ${env}"
   exit 0
 fi
 

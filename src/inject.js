@@ -9,7 +9,7 @@
  *
  */
 
-const SUPPORTED_ENV = ['production', 'development', 'test'];
+const SUPPORTED_ENV = ['production', 'development', 'test', 'staging'];
 
 const usage = () => {
   console.log();
@@ -38,7 +38,7 @@ if (!env) {
 
 if (!SUPPORTED_ENV.includes(env)) {
   console.log();
-  console.log('NODE_ENV must be {production|development|test} but ' + env);
+  console.log('NODE_ENV must be {production|development|test|staging} but ' + env);
   usage();
   process.exit();
 }

@@ -6,7 +6,7 @@ function usage {
   echo
   echo " ./bin/connect <ENV>"
   echo
-  echo "ENV: {production|development|test}"
+  echo "ENV: {production|development|test|staging}"
   echo
   echo "###################################################"
   echo
@@ -14,9 +14,9 @@ function usage {
 
 env="${1}"
 
-if [[ ! "$env" =~ ^production|development|test$ ]];then
+if [[ ! "$env" =~ ^production|development|test|staging$ ]];then
   usage
-  echo "ENV must be {production|development|test}: ${env}"
+  echo "ENV must be {production|development|test|staging}: ${env}"
   exit 0
 fi
 
