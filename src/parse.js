@@ -29,14 +29,14 @@ const compareRequests = (a, b) => {
 }
 
 const injectId = (request) => {
-  const reqId = Random.generateId();
+  const reqId = Random.generateInjectionId();
   const owner = 'INJECTED@' + reqId;
 
   request.RequestId = reqId;
   request.Owner = owner;
   for (let traveler of request.travelers) {
     traveler.RequestId = reqId;
-    traveler.TravelerId = Random.generateId();
+    traveler.TravelerId = Random.generateInjectionId();
     traveler.Owner = owner;
   }
 
