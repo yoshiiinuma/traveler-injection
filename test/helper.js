@@ -47,7 +47,7 @@ export const getTraveler = (seq = 1, needId = false, requestId = null) => {
     r = { ...r, RequestId: 'randomid', TravelerId: 'randomid', Owner: 'INJECTED@randomid' };
     if (requestId) {
       r.RequestId = requestId;
-      r.TravelerId = Random.generateId();
+      r.TravelerId = Random.generateInjectionId();
       r.Owner = 'INJECTED@' + requestId;
     }
   }
@@ -55,7 +55,7 @@ export const getTraveler = (seq = 1, needId = false, requestId = null) => {
 };
 
 export const getRequestWithTravelers = (numOfTravelers = 3, seq = 1, needId = false, realId = false) => {
-  const reqId = (realId) ? Random.generateId() : null
+  const reqId = (realId) ? Random.generateInjectionId() : null
   const r = getRequest(seq, needId, reqId);
   r.travelers = [];
   for (let i = 1; i <= numOfTravelers; i++) {

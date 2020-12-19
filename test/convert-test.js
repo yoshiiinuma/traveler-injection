@@ -101,7 +101,7 @@ describe('Converter.convert', () => {
   let stub;
 
   beforeEach(() => {
-    stub = sinon.stub(Random, 'generateId');
+    stub = sinon.stub(Random, 'generateInjectionId');
     stub.returns('randomid');
   });
 
