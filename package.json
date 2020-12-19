@@ -11,6 +11,7 @@
     "unit2": "NODE_ENV=test mocha --require @babel/register './test/convert-test.js' --exit || true",
     "unit3": "NODE_ENV=test mocha --require @babel/register './test/parse-test.js' --exit || true",
     "unit4": "NODE_ENV=test mocha --require @babel/register './test/mysql-client-test.js' --exit || true",
+    "unit5": "NODE_ENV=test mocha --require @babel/register './test/sample-generator-test.js' --exit || true",
     "test": "NODE_ENV=test mocha --require @babel/register './test/**/*.{js,es6}' --exit || true"
   },
   "author": "Yoshiaki Iinuma",
