@@ -108,7 +108,7 @@ const sortOut = (data) => {
 };
 
 const REQUEST_COLUMNS = [
-  'RequestId', 'UserId', 'Owner', 'Application Confirmation ID', 'UpdatedBy', 
+  'RequestId', 'UserId', 'Owner', 'Application Confirmation ID', 'UpdatedBy',
   'Approval ID', 'Assigned', 'Assignees',
   'Requestor', 'Requestor Name', 'Requestor Email',
   'Request Date', 'Approval Date', 'Status', 'Travel Type',
@@ -127,8 +127,39 @@ const TRAVELER_COLUMNS = [
   'Travel 14Days Before Arrival', 'Recent Travels'
 ];
 
+const ORGANIZATION_COLUMNS =[
+  'OrganizationId', 'Organization Name', 'Status',
+  'Agreement', 'Agreement Start Date', 'Agreement End Date',
+  'Phone', 'Address', 'Contact Name', 'Email', 'Contact Email',
+  'Owner', 'CreatedBy', 'UpdatedBy'
+];
+
+const convOrganizationData = (r) => {
+  return [r.organizationId, r.organizationName, r.status,
+    r.agreement, r.agreementStartDate, r.agreementEndDate,
+    r.phone, r.address, r.contactName, r.email, r.contactEmail,
+    r.owner, r.createdBy, r.updatedBy];
+};
+
+const MEMBER_COLUMNS =[
+  'OrganizationId', 'MemberId', 'Approval ID', 'Status',
+  'First Name', 'Middle Name', 'Last Name', 'Email',
+  'Owner', 'CreatedBy', 'UpdatedBy'
+];
+
+const convMemberData = (r) => {
+  return [ r.organizationId, r.memberId, r.approvalId, r.status,
+    r.firstName, r.middleName, r.lastName, r.email,
+    r.owner, r.createdBy, r.updatedBy];
+};
+
 const InsertRequestSQL = `INSERT INTO Requests (??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??) VALUES ?`;
+
 const InsertTravelerSQL = `INSERT INTO Travelers (??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??) VALUES ?`;
+
+const InsertOrganizationSQL = `INSERT INTO Organizations (??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??) VALUES ?`;
+
+const InsertMemberSQL = `INSERT INTO Members (??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??) VALUES ?`;
 
 const injectRequests = (db, values) => {
   return new Promise((resolve, reject) => {
@@ -158,6 +189,34 @@ const injectTravelers = (db, values) => {
   });
 };
 
+const injectOrganizations = (db, values) => {
+  return new Promise((resolve, reject) => {
+    if (!values || values.length === 0) {
+      return reject(new Error('No Data Provided'));
+    }
+    db.query(InsertOrganizationSQL, [...ORGANIZATION_COLUMNS, values], (err, results, fields) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve({results, fields});
+    });
+  });
+};
+
+const injectMembers = (db, values) => {
+  return new Promise((resolve, reject) => {
+    if (!values || values.length === 0) {
+      return reject(new Error('No Data Provided'));
+    }
+    db.query(InsertMemberSQL, [...MEMBER_COLUMNS, values], (err, results, fields) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve({results, fields});
+    });
+  });
+};
+
 const injectData = (db, data) => {
   const { requests, travelers } = sortOut(data);
 
@@ -176,7 +235,33 @@ const injectData = (db, data) => {
       }
       catch (err) {
         db.rollback(() => {
-          reject(err); 
+          reject(err);
+        });
+      }
+    });
+  });
+};
+
+const injectTbpData = (db, data) => {
+  const orgs = data.organizations.map(convOrganizationData);
+  const members = data.members.map(convMemberData);
+
+  return new Promise((resolve, reject) => {
+    db.beginTransaction(async (err) => {
+      try {
+        if (err) throw err;
+
+        const resultOrgs = await injectOrganizations(db, orgs);
+        const resultMembers = await injectMembers(db, members);
+
+        db.commit((err) => {
+          if (err) throw err;
+          return resolve({ organization: resultOrgs, member: resultMembers });
+        });
+      }
+      catch (err) {
+        db.rollback(() => {
+          reject(err);
         });
       }
     });
@@ -257,11 +342,30 @@ const createMySqlClient = (env) => {
       if (!db) {
         await connect();
       }
-      const results = await DB.injectData(db, data); 
+      const results = await DB.injectData(db, data);
       await close();
 
       return { results };
-    } 
+    }
+    catch (error) {
+      dbErrors.push(error.toString());
+      return { error: getErrors(), results: null };
+    }
+  };
+
+  const injectTbp = async (data) => {
+    if (hasError()) {
+      return { error: getErrors(), results: null };
+    }
+    try {
+      if (!db) {
+        await connect();
+      }
+      const results = await DB.injectTbpData(db, data);
+      await close();
+
+      return { results };
+    }
     catch (error) {
       dbErrors.push(error.toString());
       return { error: getErrors(), results: null };
@@ -274,7 +378,8 @@ const createMySqlClient = (env) => {
     showErrors,
     connect,
     close,
-    inject
+    inject,
+    injectTbp
   };
 };
 
@@ -285,15 +390,24 @@ const DB = {
   sortOut,
   REQUEST_COLUMNS,
   TRAVELER_COLUMNS,
+  ORGANIZATION_COLUMNS,
+  MEMBER_COLUMNS,
   InsertRequestSQL,
   InsertTravelerSQL,
+  InsertOrganizationSQL,
+  InsertMemberSQL,
   convRequestData,
   convTravelerData,
+  convOrganizationData,
+  convMemberData,
   createConnection,
   closeConnection,
   injectRequests,
   injectTravelers,
+  injectOrganizations,
+  injectMembers,
   injectData,
+  injectTbpData,
 };
 
 export default DB;

@@ -5,6 +5,7 @@ import sinon from 'sinon';
 import DB from '../src/mysql-client.js';
 import Random from '../src/random.js';
 import { getRequests, getRequest, getTraveler, TestRequestData } from './helper.js';
+import Generator from '../src/sample-generator.js';
 
 const RequestData = [
   ['randomid', null, 'INJECTED@randomid', 'randomid', 'SYSTEMUSER', null, 'AG',
@@ -37,6 +38,368 @@ const TravelerData = [
   null, null, null, '8089993333',
   'Hotel / Motel', '3333 Aaaa St, Honolulu, HI', 0, null],
 ];
+
+describe('DB.injectTbpData', () => {
+  const TestTbpData = Generator.generateTbpSamples(3);
+  let stubBeginTransaction, stubCommit, stubRollback, stubQuery;
+  const db = { beginTransaction: () => {}, commit: () => {},
+    rollback: () => {}, query: () => {}};
+
+  context('if something happens in db.beginTransaction', () => {
+    const err = new Error('Something happened in db.beginTransaction')
+
+    beforeEach(async () => {
+      stubBeginTransaction = sinon.stub(db, 'beginTransaction').yields(err);
+      stubCommit = sinon.stub(db, 'commit').yields(null);
+      stubRollback = sinon.stub(db, 'rollback').yields(null);
+      stubQuery = sinon.stub(db, 'query').yields(null, 'RSLTS', 'FIELDS');
+    });
+
+    afterEach(async () => {
+      stubBeginTransaction.restore();
+      stubCommit.restore();
+      stubRollback.restore();
+      stubQuery.restore();
+    });
+
+    it('returns error', async () => {
+      try {
+        let r = await DB.injectTbpData(db, TestTbpData);
+        throw e;
+      }
+      catch(e) {
+        expect(e.toString()).to.be.equal('Error: Something happened in db.beginTransaction');
+        expect(stubBeginTransaction.called).to.be.true;
+        expect(stubQuery.notCalled).to.be.true;
+        expect(stubCommit.notCalled).to.be.true;
+        expect(stubRollback.called).to.be.true;
+      }
+    });
+  })
+
+  context('if something happens in db.query', () => {
+    const err = new Error('Something happened in db.query')
+
+    beforeEach(async () => {
+      stubBeginTransaction = sinon.stub(db, 'beginTransaction').yields(null);
+      stubCommit = sinon.stub(db, 'commit').yields(null);
+      stubRollback = sinon.stub(db, 'rollback').yields(null);
+      stubQuery = sinon.stub(db, 'query').yields(err, null, null);
+    });
+
+    afterEach(async () => {
+      stubBeginTransaction.restore();
+      stubCommit.restore();
+      stubRollback.restore();
+      stubQuery.restore();
+    });
+
+    it('returns error', async () => {
+      try {
+        let r = await DB.injectTbpData(db, TestTbpData);
+        throw e;
+      }
+      catch(e) {
+        expect(e.toString()).to.be.equal('Error: Something happened in db.query');
+        expect(stubBeginTransaction.called).to.be.true;
+        expect(stubQuery.called).to.be.true;
+        expect(stubCommit.notCalled).to.be.true;
+        expect(stubRollback.called).to.be.true;
+      }
+    });
+  })
+
+  context('if something happens in db.commit', () => {
+    const err = new Error('Something happened in db.commit')
+
+    beforeEach(async () => {
+      stubBeginTransaction = sinon.stub(db, 'beginTransaction').yields(null);
+      stubCommit = sinon.stub(db, 'commit').yields(err);
+      stubRollback = sinon.stub(db, 'rollback').yields(null);
+      stubQuery = sinon.stub(db, 'query').yields(null, 'RSLTS', 'FIELDS');
+    });
+
+    afterEach(async () => {
+      stubBeginTransaction.restore();
+      stubCommit.restore();
+      stubRollback.restore();
+      stubQuery.restore();
+    });
+
+    it('returns error', async () => {
+      try {
+        let r = await DB.injectTbpData(db, TestTbpData);
+        throw e;
+      }
+      catch(e) {
+        expect(e.toString()).to.be.equal('Error: Something happened in db.commit');
+        expect(stubBeginTransaction.called).to.be.true;
+        expect(stubQuery.called).to.be.true;
+        expect(stubCommit.called).to.be.true;
+        expect(stubRollback.called).to.be.true;
+      }
+    });
+  })
+
+  context('given valid data', () => {
+    beforeEach(async () => {
+      stubBeginTransaction = sinon.stub(db, 'beginTransaction').yields(null);
+      stubCommit = sinon.stub(db, 'commit').yields(null);
+      stubRollback = sinon.stub(db, 'rollback').yields(null);
+      stubQuery = sinon.stub(db, 'query').yields(null, 'RSLTS', 'FIELDS');
+    });
+
+    afterEach(async () => {
+      stubBeginTransaction.restore();
+      stubCommit.restore();
+      stubRollback.restore();
+      stubQuery.restore();
+    });
+
+    it('returns injection results for both requests and travelers', async () => {
+      try {
+        let r = await DB.injectTbpData(db, TestTbpData);
+        expect(r).to.be.eql({
+          organization: { results: 'RSLTS', fields: 'FIELDS' },
+          member: { results: 'RSLTS', fields: 'FIELDS' }
+        });
+        expect(stubBeginTransaction.called).to.be.true;
+        expect(stubCommit.called).to.be.true;
+        expect(stubRollback.notCalled).to.be.true;
+        expect(stubQuery.calledTwice).to.be.true;
+      }
+      catch(e) {
+        throw e;
+      }
+    });
+  })
+})
+
+describe('DB.injectOrganizations', () => {
+  const OrgData = [DB.convOrganizationData(Generator.generateSampleOrganization())];
+
+  context('given no data', () => {
+    it('returns error', async () => {
+      try {
+        await DB.injectOrganizations({}, null);
+        throw new Error('Should not be here');
+      }
+      catch(e) {
+        expect(e.toString()).to.be.equal('Error: No Data Provided');
+      }
+    });
+  })
+
+  context('given empty data', () => {
+    it('returns error', async () => {
+      try {
+        await DB.injectOrganizations({}, []);
+        throw new Error('Should not be here');
+      }
+      catch(e) {
+        expect(e.toString()).to.be.equal('Error: No Data Provided');
+      }
+    });
+  })
+
+  context('when db raises an exception', () => {
+    let stub;
+    const db = { query: () => {} };
+
+    beforeEach(async () => {
+      const err = new Error('Something happened');
+      stub = sinon.stub(db, 'query');
+      stub.yields(err, 'RESULTS', 'FIELDS');
+    });
+
+    afterEach(async () => {
+      stub.restore();
+    });
+
+    it('returns error', async () => {
+      try {
+        await DB.injectOrganizations(db, OrgData);
+        throw new Error('Should not be here');
+      }
+      catch(e) {
+        expect(e.toString()).to.be.equal('Error: Something happened');
+      }
+      expect(stub.calledWith(
+        DB.InsertOrganizationSQL,
+        [...DB.ORGANIZATION_COLUMNS, OrgData])
+      ).to.be.true
+    });
+  })
+
+  context('given data', () => {
+    let stub;
+    const db = { query: () => {} };
+
+    beforeEach(async () => {
+      stub = sinon.stub(db, 'query');
+      stub.yields(null, 'RESULTS', 'FIELDS');
+    });
+
+    afterEach(async () => {
+      stub.restore();
+    });
+
+    it('pupulates the database', async () => {
+      try {
+        const r = await DB.injectOrganizations(db, OrgData);
+        expect(r).to.eql({
+          results: 'RESULTS',
+          fields: 'FIELDS'
+        });
+      }
+      catch (e) {
+        throw e;
+      }
+    });
+  })
+
+  /* This tests the actual db insertion
+  context('given data', () => {
+    const [_, conf] = DB.getConfig('test');
+
+    it('pupulates the database', async () => {
+      const db = await DB.createConnection(conf);
+      try {
+        const rawData = await DB.injectOrganizations(db, OrgData);
+        const r = JSON.parse(JSON.stringify(rawData));
+
+        expect(r.results).to.eql({
+            fieldCount: 0,
+            affectedRows: 1,
+            insertId: 0,
+            serverStatus: 2,
+            warningCount: 0,
+            message: '',
+            protocol41: true,
+            changedRows: 0
+        });
+      }
+      catch (e) {
+        console.log(e);
+        throw e;
+      }
+    });
+  })
+  */
+})
+
+describe('DB.injectMembers', () => {
+  const MemberData = [DB.convMemberData(Generator.generateSampleMember())];
+
+  context('given no data', () => {
+    it('returns error', async () => {
+      try {
+        await DB.injectMembers({}, null);
+        throw new Error('Should not be here');
+      }
+      catch(e) {
+        expect(e.toString()).to.be.equal('Error: No Data Provided');
+      }
+    });
+  })
+
+  context('given empty data', () => {
+    it('returns error', async () => {
+      try {
+        await DB.injectMembers({}, []);
+        throw new Error('Should not be here');
+      }
+      catch(e) {
+        expect(e.toString()).to.be.equal('Error: No Data Provided');
+      }
+    });
+  })
+
+  context('when db raises an exception', () => {
+    let stub;
+    const db = { query: () => {} };
+
+    beforeEach(async () => {
+      const err = new Error('Something happened');
+      stub = sinon.stub(db, 'query');
+      stub.yields(err, 'RESULTS', 'FIELDS');
+    });
+
+    afterEach(async () => {
+      stub.restore();
+    });
+
+    it('returns error', async () => {
+      try {
+        await DB.injectMembers(db, MemberData);
+        throw new Error('Should not be here');
+      }
+      catch(e) {
+        expect(e.toString()).to.be.equal('Error: Something happened');
+      }
+      expect(stub.calledWith(
+        DB.InsertMemberSQL,
+        [...DB.MEMBER_COLUMNS, MemberData])
+      ).to.be.true
+    });
+  })
+
+  context('given data', () => {
+    let stub;
+    const db = { query: () => {} };
+
+    beforeEach(async () => {
+      stub = sinon.stub(db, 'query');
+      stub.yields(null, 'RESULTS', 'FIELDS');
+    });
+
+    afterEach(async () => {
+      stub.restore();
+    });
+
+    it('pupulates the database', async () => {
+      try {
+        const r = await DB.injectMembers(db, MemberData);
+        expect(r).to.eql({
+          results: 'RESULTS',
+          fields: 'FIELDS'
+        });
+      }
+      catch (e) {
+        throw e;
+      }
+    });
+  })
+
+  /* This tests the actual db insertion
+  context('given data', () => {
+    const [_, conf] = DB.getConfig('test');
+
+    it('pupulates the database', async () => {
+      const db = await DB.createConnection(conf);
+      try {
+        const rawData = await DB.injectMembers(db, MemberData);
+        const r = JSON.parse(JSON.stringify(rawData));
+
+        expect(r.results).to.eql({
+            fieldCount: 0,
+            affectedRows: 1,
+            insertId: 0,
+            serverStatus: 2,
+            warningCount: 0,
+            message: '',
+            protocol41: true,
+            changedRows: 0
+        });
+      }
+      catch (e) {
+        console.log(e);
+        throw e;
+      }
+    });
+  })
+  */
+})
 
 describe('DB.createMySqlClient#inject', () => {
   context('given wrong environment', () => {
@@ -195,7 +558,7 @@ describe('DB.createMySqlClient#inject', () => {
 
 describe('DB.injectData', () => {
   let stubBeginTransaction, stubCommit, stubRollback, stubQuery;
-  const { expReqs, expTrvls } = DB.sortOut(TestRequestData); 
+  const { expReqs, expTrvls } = DB.sortOut(TestRequestData);
   const db = { beginTransaction: () => {}, commit: () => {},
     rollback: () => {}, query: () => {}};
 
@@ -601,8 +964,62 @@ describe('DB.convTravelerData', () => {
       'randomid', 'randomid', 'INJECTED@randomid', 'ExemptionCategory', 'SYSTEMUSER',
       'PPPP1', null, 'QQQQ1', 'United States', 'Arizona', 'Oʻahu', '2020-10-01',
       null, null, null, '8089991111',
-      'Hotel / Motel', '1111 Aaaa St, Honolulu, HI', 1, 'China' 
+      'Hotel / Motel', '1111 Aaaa St, Honolulu, HI', 1, 'China'
     ]);
+  });
+})
+
+describe('DB.convOrganizaionData', () => {
+  const email = 'bkpznc.qbnn@sample.com'
+  const data = {
+    organizationId: 'yShbpuGz',
+    organizationName: 'ORGNAME',
+    status: 'Approved',
+    agreement: 'yShbpuGz_agreement.pdf',
+    agreementStartDate: '2020-12-22',
+    agreementEndDate: '2021-03-28',
+    phone: '3000068931',
+    address: '1985 Xsjymo St., Beizmv, Alaska 95957',
+    contactName: 'Bkpznc Qbnn',
+    email: email,
+    contactEmail: email,
+    owner: email,
+    createdBy: email,
+    updatedBy: email
+  }
+
+  it('converts organization object into array', () => {
+    const r = DB.convOrganizationData(data);
+    expect(r).to.eql([
+      'yShbpuGz', 'ORGNAME', 'Approved',
+      'yShbpuGz_agreement.pdf', '2020-12-22', '2021-03-28',
+      '3000068931', '1985 Xsjymo St., Beizmv, Alaska 95957',
+      'Bkpznc Qbnn', email, email,
+      email, email, email]);
+  });
+})
+
+describe('DB.convMemberData', () => {
+  const email = 'bkpznc.qbnn@sample.com'
+  const data = {
+    organizationId: 'yShbpuGz',
+    memberId: 'OtUXscAj',
+    approvalId: 'C#002rCECY',
+    status: 'Active',
+    firstName: 'Bkpznc',
+    middleName: '',
+    lastName: 'Qbnn',
+    email: email,
+    owner: email,
+    createdBy: email,
+    updatedBy: email
+  }
+
+  it('converts organization object into array', () => {
+    const r = DB.convMemberData(data);
+    expect(r).to.eql([
+      'yShbpuGz', 'OtUXscAj', 'C#002rCECY', 'Active',
+      'Bkpznc', '', 'Qbnn', email, email, email, email]);
   });
 })
 
