@@ -1,6 +1,7 @@
 
 import Parser from './parse.js';
 import DB from './mysql-client.js';
+import Generator from './sample-generator.js';
 
 const requestToString = (r) => {
   let str = `${r.RequestorEmail} ${r.RequestorFirstName} ${r.RequestorLastName}`;
@@ -127,10 +128,29 @@ const inject = async (csv, env) => {
   return;
 };
 
+const seedTbp = async (env) => {
+  const db = DB.createMySqlClient(env);
+  const seedData = Generator.generateTbpSamples(3);
+  const r = await db.injectTbp(seedData);
+  if (r.error) {
+    console.log('DB Error');
+    if (typeof r.error === 'Array') {
+      db.showErrors();
+    } else {
+      console.log(r.error);
+    }
+  } else {
+    console.log(r.results);
+    console.log('!!! Seeding TBP Completed !!!');
+  }
+  return;
+};
+
 const Injector = {
   list,
   inject,
-  validate
+  validate,
+  seedTbp
 };
 
 export default Injector;
